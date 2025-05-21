@@ -1,0 +1,19 @@
+#version: '3'
+services:
+  streamlit_bedrock:
+    build: 
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8001
+    environment:
+      - PROVIDER=bedrock
+      - STREAMLIT_SERVER_PORT=8001
+
+  streamlit_openai:
+    build: 
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - PROVIDER=openai
+      - STREAMLIT_SERVER_PORT=8000
