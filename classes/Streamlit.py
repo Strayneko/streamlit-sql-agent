@@ -2,17 +2,19 @@ import json
 import streamlit as st
 from langchain_core.messages import HumanMessage
 from classes.MySQLAgent import MySQLAgent
+import os
 
 class Streamlit:
 
     def __init__(self):
         self.__user_input = st.chat_input("Ask your question...")
-        sql_agent = MySQLAgent()
-        self.__agent = sql_agent.get_agent_instance()
+        self.sql_agent = MySQLAgent()
+        self.__agent = self.sql_agent.get_agent_instance()
 
     def run_streamlit(self):
         # Title
-        st.title("🧠 SQL Agent Assistant")
+        provider = os.getenv('PROVIDER')
+        st.title("🧠 SQL Agent Assistant using {provider} {model}".format(provider=provider.upper(), model=self.sql_agent.model))
         # Input
         self.init_message_history()
         self.handle_user_input()

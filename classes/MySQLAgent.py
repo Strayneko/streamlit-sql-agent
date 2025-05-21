@@ -4,17 +4,34 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
+from langchain_deepseek import ChatDeepSeek
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_aws import ChatBedrock
 
 class MySQLAgent:
     def __init__(self):
          load_dotenv()
+         
+         self.__provider = os.getenv('PROVIDER', '')
          self.__db_uri = os.getenv('DB_URI', '')
          self.__db = SQLDatabase.from_uri(self.__db_uri)
-         self.__model = os.getenv('OPENAI_MODEL', '')
-         self.__api_key = os.getenv('OPENAI_API_KEY', '')
-         self.__llm = ChatOpenAI(model=self.__model, api_key=self.__api_key)
-         self.__agent = create_react_agent(self.__llm, self.get_toolkit(), prompt=self.get_system_prompt())
 
+         match self.__provider:
+               case 'bedrock':
+                  secret_key = os.getenv('AWS_SECRET_KEY')
+                  key_id = os.getenv('AWS_KEY_ID')
+                  region = os.getenv('AWS_REGION')
+                  self.model = os.getenv('AWS_BEDROCK_MODEL')
+                  self.__llm = ChatBedrock(model=self.model, aws_secret_access_key=secret_key, aws_access_key_id=key_id, region=region)
+               
+               case 'openai':
+                  api_key = os.getenv('OPENAI_API_KEY')
+                  self.model = os.getenv('OPENAI_MODEL')
+                  self.__llm = ChatOpenAI(model=self.model, api_key=api_key)
+               case _:
+                   raise "Provider is not valid!"
+
+         self.__agent = create_react_agent(self.__llm, self.get_toolkit(), prompt=self.get_system_prompt())
     def get_toolkit(self):
             toolkit = SQLDatabaseToolkit(db=self.__db, llm=self.__llm)
             return toolkit.get_tools()    
