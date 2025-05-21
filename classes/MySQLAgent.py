@@ -28,6 +28,11 @@ class MySQLAgent:
                   api_key = os.getenv('OPENAI_API_KEY')
                   self.model = os.getenv('OPENAI_MODEL')
                   self.__llm = ChatOpenAI(model=self.model, api_key=api_key)
+              
+               case 'gemini':
+                   api_key = os.getenv('GEMINI_API_KEY')
+                   self.model = os.getenv('GEMINI_MODEL')
+                   self.__llm = ChatGoogleGenerativeAI(model=self.model, api_key=api_key)
                case _:
                    raise "Provider is not valid!"
 

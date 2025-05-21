@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "-m", "streamlit", "run", "app.py"]
+CMD [ "python", "-m", "streamlit", "run", "app.py", "--server.address=0.0.0.0"]
